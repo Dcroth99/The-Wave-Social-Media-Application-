@@ -1,5 +1,3 @@
-<!-- users/templates/users/profile.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,18 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ profile.user.username }} Profile</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    {% load static %}
+    <style>
+        .follower-list, .following-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function toggleCollapse(targetId) {
+                var target = document.getElementById(targetId);
+                target.classList.toggle('show');
+            }
+
+            document.getElementById('followers-toggle').addEventListener('click', function (event) {
+                event.preventDefault();
+                toggleCollapse('followers-list');
+            });
+
+            document.getElementById('following-toggle').addEventListener('click', function (event) {
+                event.preventDefault();
+                toggleCollapse('following-list');
+            });
+        });
+    </script>
 </head>
-{% load static %}
 <body>
     <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="{% url 'profile' username=request.user.username %}">Profile</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'feed' %}">Feed</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'create_post' %}">Create Post</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
         <div class="row mt-5">
             <div class="col-md-3">
                 <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'path_to_default_image.jpg' %}{% endif %}" class="img-fluid rounded-circle" alt="Profile Picture">
             </div>
             <div class="col-md-9">
-                <h1><a href="{% url 'profile' profile.user.username %}">{{ profile.user.username }}</a></h1>
+                <h1>{{ profile.user.username }}</h1>
                 <p>{{ profile.bio }}</p>
-                <p>Followers: {{ followers.count }} | Following: {{ following.count }}</p>
+                
+                <!-- Followers dropdown -->
+                <p>
+                    <a href="#" id="followers-toggle" class="btn btn-link">Followers: {{ followers.count }}</a>
+                    <div class="collapse follower-list mt-2" id="followers-list">
+                        <div class="card card-body">
+                            <ul class="list-group">
+                                {% for follower in followers %}
+                                    {% if follower.username %}
+                                        <li class="list-group-item"><a href="{% url 'profile' follower.username %}">{{ follower.username }}</a></li>
+                                    {% else %}
+                                        <li class="list-group-item text-danger">Invalid follower data: {{ follower }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </p>
+                
+                <!-- Following dropdown -->
+                <p>
+                    <a href="#" id="following-toggle" class="btn btn-link">Following: {{ following.count }}</a>
+                    <div class="collapse following-list mt-2" id="following-list">
+                        <div class="card card-body">
+                            <ul class="list-group">
+                                {% for followed_user in following %}
+                                    {% if followed_user.username %}
+                                        <li class="list-group-item"><a href="{% url 'profile' followed_user.username %}">{{ followed_user.username }}</a></li>
+                                    {% else %}
+                                        <li class="list-group-item text-danger">Invalid following data: {{ followed_user }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </p>
+
                 {% if not is_following %}
                     <form action="{% url 'follow_unfollow' profile.user.username %}" method="post">
                         {% csrf_token %}
@@ -38,19 +119,13 @@
                 {% for post in posts %}
                     <div class="card mb-3">
                         <div class="card-body">
-                            <h5 class="card-title">{{ post.user.username }}</h5>
+                            <h5 class="card-title"><a href="{% url 'profile' username=post.user.username %}">{{ post.user.username }}</a></h5>
                             <p class="card-text">{{ post.content }}</p>
                             {% if post.image %}
                                 <img src="{{ post.image.url }}" class="img-fluid" alt="Post Image">
                             {% endif %}
                             <p class="card-text"><small class="text-muted">{{ post.created_at }}</small></p>
-                            <a href="{% url 'like_post' post.id %}" class="btn btn-light">
-                                {% if user in post.likes.all %}
-                                    Unlike
-                                {% else %}
-                                    Like
-                                {% endif %}
-                            </a>
+                            <a href="{% url 'like_post' post.id %}" class="btn btn-light">{% if user in post.likes.all %}Unlike{% else %}Like{% endif %}</a>
                             <form method="post" action="{% url 'comment_post' post.id %}" class="mt-2">
                                 {% csrf_token %}
                                 <div class="input-group">
@@ -62,7 +137,7 @@
                             </form>
                             <ul class="list-group mt-2">
                                 {% for comment in post.comments.all %}
-                                    <li class="list-group-item">{{ comment.user.username }}: {{ comment.content }}</li>
+                                    <li class="list-group-item"><a href="{% url 'profile' username=comment.user.username %}">{{ comment.user.username }}</a>: {{ comment.content }}</li>
                                 {% endfor %}
                             </ul>
                         </div>

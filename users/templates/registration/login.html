@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    {% load static %}
+    <style>
+        body {
+            background-color: lightsteelblue;
+        }
+        .navbar-brand-logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 24px;
+            color: #007bff;
+            margin-right: 20px;
+            font-weight: bold;
+            border-radius: 20px;
+        }
+        .navbar-brand-logo::before {
+            content: '';
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .navbar-brand-logo:hover {
+            color: #0056b3;
+            text-decoration: none;
+        }
+        .navbar {
+            margin-bottom: 20px;
+            background-color: cornflowerblue;
+        }
+        .container {
+            background-color: rgb(149, 172, 216);
+            padding: 50px;
+            border-radius: 10px;
+        }
+        .justify-content-center {
+            background-color:floralwhite;
+            background-size: cover;
+            padding-bottom: 10px;
+            border-radius: 20px;
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand navbar-brand-logo" href="#">
+                The Wave
+            </a>
+        </nav>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h2 class="mt-5">Login</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
