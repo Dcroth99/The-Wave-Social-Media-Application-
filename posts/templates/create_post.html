@@ -7,46 +7,23 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     {% load static %}
     <style>
+        .container {
+            border-radius: 10px;
+        }
         body {
-            background-color: whitesmoke;
-            font-family: 'Arial', sans-serif;
+            background-color: rgb(213, 240, 245);
+        }
+        .H1FEED {
+            font-family: serif;
+            color: rgb(0, 0, 0);
+            font-size: 50px;
+            padding-right: 20px;
+        }
+        .H1FEED:hover {
+            text-decoration: none;
         }
         .navbar {
             margin-bottom: 20px;
-        }
-        .navbar-brand-logo img {
-            max-height: 40px;
-        }
-        .btn-submit {
-            background-color: #007bff;
-            color: white;
-            border-radius: 25px;
-            padding: 10px 20px;
-            text-decoration: none;
-            font-size: 1.1em;
-            font-weight: bold;
-        }
-        .btn-submit:hover {
-            background-color: #0056b3;
-        }
-        .form-group label {
-            font-weight: bold;
-        }
-        .form-control-file {
-            padding: 10px;
-            border: 2px dashed #007bff;
-            border-radius: 5px;
-            background-color: white;
-            margin-bottom: 15px;
-        }
-        .form-control-file:hover {
-            background-color: #e9f5ff;
-        }
-        h1 {
-            font-size: 2.5em;
-            color: #007bff;
-            margin-bottom: 20px;
-            text-align: center;
         }
         .navbar-brand-logo {
             font-family: 'Pacifico', cursive;
@@ -58,12 +35,92 @@
         .nav-link {
             font-weight: bold;
         }
+        .notifications {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            width: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .notification {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .notification:last-child {
+            border-bottom: none;
+        }
+        .notification.unread {
+            font-weight: bold;
+        }
+        .btn-clear-notifications {
+            background-color: #6f6f6f;
+            color: white;
+            border-radius: 5px;
+            padding: 3px 6px;
+            width: auto;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .btn-clear-notifications:hover {
+            background-color: #433e3f;
+        }
+        .card {
+            margin-bottom: 1rem;
+            padding: 10px;
+        }
+        .card-body {
+            padding: 10px;
+            max-width: 800px;
+        }
+        .messages {
+            position: fixed;
+            top: 100px;
+            left: 20px;
+            width: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .message {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .message:last-child {
+            border-bottom: none;
+        }
+        .message.unread {
+            font-weight: bold;
+        }
+        .btn-clear-messages {
+            background-color: #6f6f6f;
+            color: white;
+            border-radius: 5px;
+            padding: 3px 6px;
+            width: auto;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .btn-clear-messages:hover {
+            background-color: #433e3f;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand navbar-brand-logo" href="{% url 'feed' %}">The Wave</a>
+            <a class="H1FEED" href="{% url 'feed' %}">Waves</a>
             <a class="navbar-brand" href="{% url 'profile' username=request.user.username %}">Profile</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -77,11 +134,16 @@
                         <a class="nav-link" href="{% url 'create_post' %}">Create Post</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        <a class="nav-link" href="{% url 'login' %}">Logout</a>
                     </li>
                 </ul>
+                <form class="form-inline ml-auto" action="{% url 'search' %}" method="get">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
             </div>
         </nav>
+
 
         <h1>Create Post</h1>
         <form method="post" enctype="multipart/form-data">
@@ -98,4 +160,5 @@
         </form>
     </div>
 </body>
+<footer style=" margin-left: 650px;">@WAVES website</footer>
 </html>

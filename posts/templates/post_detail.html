@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.user.username }}'s Post{% endblock %}
+
+{% block content %}
+<style>
+      .post-card {
+        max-width: 750px;
+        margin: 0 auto 20px auto; /* Center the card and add bottom margin */
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #fff;
+    }
+    .post-image {
+        max-height: 400px; /* Reduce max-height for images */
+        object-fit: cover;
+    }
+    .btn-like, .btn-comment {
+        background-color: #8fd7f9;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        padding: 5px 10px;
+        text-decoration: none;
+        color: #495057;
+        
+    }
+    .btn-like:hover, .btn-comment:hover {
+        background-color: #e2e6ea;
+    }
+    .card-title a {
+        text-decoration: none;
+        color: inherit;
+    }
+    .card-text {
+        margin-bottom: 10px;
+    }
+</style>
+</style>
+<div class="container" style="max-width: 750px;">
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">@{{ post.user.username }}</h5>
+            <p class="card-text">{{ post.content }}</p>
+            {% if post.image %}
+                <img src="{{ post.image.url }}" class="img-fluid post-image" alt="Post Image">
+            {% endif %}
+            <p class="card-text"><small class="text-muted">{{ post.created_at }}</small></p>
+
+            <!-- Like Button -->
+            {% if user.is_authenticated %}
+                {% if user in post.likes.all %}
+                    <a href="{% url 'like_post' post.id %}" class="btn btn-like">Unlike</a>
+                {% else %}
+                    <a href="{% url 'like_post' post.id %}" class="btn btn-like">Like</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-like">Like</a>
+            {% endif %}
+
+            <!-- Display Like Count -->
+            <span>{{ post.likes.count }} {% if post.likes.count == 1 %} like{% else %} likes{% endif %}</span>
+
+            <!-- Comment Form -->
+            <form method="post" action="{% url 'comment_post' post.id %}" class="mt-2">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" name="content" class="form-control comment-input" placeholder="Add a comment">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary btn-comment" type="submit">Comment</button>
+                    </div>
+                </div>
+                <input type="hidden" name="parent" value="0">
+            </form>
+
+            <!-- Comment Display -->
+            <ul class="list-group mt-2">
+                {% for comment in post.comments.all %}
+                    <li class="list-group-item">
+                        <a href="{% url 'profile' username=comment.user.username %}">{{ comment.user.username }}</a>: {{ comment.content }}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <!-- Delete Button -->
+            {% if user == post.user %}
+                <a href="{% url 'delete_post' post.id %}" class="btn btn-delete mt-2">Delete</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<footer style=" margin-left: 650px;">@WAVES website</footer>
+{% endblock %}

@@ -67,10 +67,9 @@
         .nav-link {
             font-weight: bold;
         }
-        .notifications {
+        .notifications, .messages {
             position: fixed;
             top: 100px;
-            right: 20px;
             width: 250px;
             max-height: 400px;
             overflow-y: auto;
@@ -79,15 +78,35 @@
             border-radius: 5px;
             padding: 10px;
         }
-        .notification {
+        .notifications {
+            right: 20px;
+        }
+        .messages {
+            left: 20px;
+        }
+        .notification, .message {
             border-bottom: 1px solid #ddd;
             padding: 10px 0;
         }
-        .notification:last-child {
+        .notification:last-child, .message:last-child {
             border-bottom: none;
         }
-        .notification.unread {
+        .notification.unread, .message.unread {
             font-weight: bold;
+        }
+        .btn-clear-notifications, .btn-clear-messages {
+            background-color: #6f6f6f;
+            color: white;
+            border-radius: 5px;
+            padding: 3px 6px;
+            width: auto;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .btn-clear-notifications:hover, .btn-clear-messages:hover {
+            background-color: #433e3f;
         }
         .card {
             margin-bottom: 1rem; /* Adjust spacing between posts */
@@ -97,14 +116,13 @@
             padding: 10px; /* Reduce padding within card body */
             max-width: 800px;
         }
-        
     </style>
 </head>
 <body>
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="H1FEED"  href="{% url 'feed' %}">The Wave</a>
-            <a class="navbar-brand" href="{% url 'profile' username=request.user.username %}">profile</a>
+            <a class="H1FEED" href="{% url 'feed' %}">Waves</a>
+            <a class="navbar-brand" href="{% url 'profile' username=request.user.username %}">Profile</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -117,9 +135,13 @@
                         <a class="nav-link" href="{% url 'create_post' %}">Create Post</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        <a class="nav-link" href="{% url 'login' %}">Logout</a>
                     </li>
                 </ul>
+                <form class="form-inline ml-auto" action="{% url 'search' %}" method="get">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
             </div>
         </nav>
 
@@ -139,4 +161,5 @@
         {% block content %}{% endblock %}
     </div>
 </body>
+<footer style=" margin-left: 650px;">@WAVES website</footer>
 </html>

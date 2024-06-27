@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 class Post(models.Model):
     #creates a user from the imported User model 
@@ -12,6 +13,9 @@ class Post(models.Model):
         to store it as a null value incase its left blank """
     image = models.ImageField(upload_to='post_images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
 
     def __str__(self):
         return self.content[:50]

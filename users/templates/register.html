@@ -8,14 +8,38 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     {% load static %}
 </head>
+<style> 
+body {
+    background-color: rgb(213, 240, 245);
+
+}
+.form {
+    background-color: white;
+    padding: 100px;
+    border-radius: 20px;
+    border-color: black;
+    border-style: solid; 
+}
+h1 {
+    background-color: whitesmoke;
+    padding: 20px;
+    border-radius: 20px;
+    border-color: black;
+    border-style: solid;
+    margin-top: 20px;
+}
+</style>
 <body>
     <div class="container">
+        
         <h1>Register</h1>
+        <div class="form">
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
+    </div>
     </div>
 </body>
 </html>

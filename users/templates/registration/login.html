@@ -8,10 +8,12 @@
     {% load static %}
     <style>
         body {
-            background-color: lightsteelblue;
+            background-color: rgb(213, 240, 245);
+            padding-top: 100px;
+            
         }
         .navbar-brand-logo {
-            font-family: 'Pacifico', cursive;
+            font-family: serif;
             font-size: 24px;
             color: #007bff;
             margin-right: 20px;
@@ -23,7 +25,7 @@
             display: inline-block;
             width: 40px;
             height: 40px;
-            background-color: #007bff;
+            background-color: #8ab8ea;
             border-radius: 50%;
             margin-right: 10px;
         }
@@ -33,12 +35,14 @@
         }
         .navbar {
             margin-bottom: 20px;
-            background-color: cornflowerblue;
+            background-color: rgb(185, 205, 242);
         }
         .container {
             background-color: rgb(149, 172, 216);
             padding: 50px;
             border-radius: 10px;
+            border-style: solid;
+            border-color: black;
         }
         .justify-content-center {
             background-color:floralwhite;
@@ -50,13 +54,15 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container" style="background-color:#cbdcee;">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" style="border-style: solid;
+        border-color: black;">
             <a class="navbar-brand navbar-brand-logo" href="#">
-                The Wave
+                WAVES Social Media
             </a>
         </nav>
-        <div class="row justify-content-center">
+        <div class="row justify-content-center" style="border-style: solid;
+        border-color: black;">
             <div class="col-md-6">
                 <h2 class="mt-5">Login</h2>
                 <form method="post">
@@ -64,8 +70,17 @@
                     {{ form.as_p }}
                     <button type="submit" class="btn btn-primary">Login</button>
                 </form>
+
+                
             </div>
+            <div style="margin-top: 50px; padding-top: 50px;">
+            <h4>New Accounts:</h4>
+            <a  href="{% url 'register' %}" style="font-family:serif; font-size: 20px;">
+                Register Here
+            </a>
+        </div>
         </div>
     </div>
 </body>
+<footer style=" margin-left: 650px;">@WAVES website</footer>
 </html>

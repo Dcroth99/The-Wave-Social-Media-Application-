@@ -3,29 +3,18 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import Profile, Follow, Notification
+from .models import Profile, Follow, Notification, Message
+from .forms import MessageForm
 
 @login_required
 def profile(request, username):
     user = get_object_or_404(User, username=username)
     profile = get_object_or_404(Profile, user=user)
-    """
-        _set is used to after the, 
-
-        lowercase model you wish to get the data from 
-        
-        gets all the posts made by the user
-    
-    """ 
     posts = user.post_set.all()
-    #Get all users who are following the specified user.
     followers = User.objects.filter(following__following=user)
-    #Get all users that the specified user is following.
     following = User.objects.filter(followers__follower=user)
-    #checks if the user is following that profile
     is_following = Follow.objects.filter(follower=request.user, following=user).exists()
-    #gets the notifications
-    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+    
     
     return render(request, 'profile.html', {
         'profile': profile,
@@ -33,7 +22,6 @@ def profile(request, username):
         'followers': followers,
         'following': following,
         'is_following': is_following,
-        'notifications': notifications
     })
 
 @login_required
@@ -88,4 +76,5 @@ def login_view(request):
 @login_required
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('logout')
+

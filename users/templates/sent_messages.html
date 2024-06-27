@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Sent Messages{% endblock %}
+{% block content %}
+<h1>Sent Messages</h1>
+<ul class="list-group">
+    {% for message in messages %}
+        <li class="list-group-item">
+            <strong>To {{ message.receiver.username }}</strong>: {{ message.content }}
+            <span class="text-muted float-right">{{ message.timestamp }}</span>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

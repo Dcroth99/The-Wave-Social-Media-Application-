@@ -1,24 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Post, Comment, Like
-from users.models import Notification
-from .forms import CommentForm
+from .models import Post, Comment, Like, User
+from users.models import Notification, Profile
+from django.db.models import Q
+
 
 @login_required
 def feed(request):
-    # Fetch posts from users that the current user is following
     posts = Post.objects.filter(user__followers__follower=request.user).order_by('-created_at')
+    posts_with_comments = {post: post.comments.all() for post in posts}
     notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
-
-    # Create a dictionary to hold posts and their top-level comments
-    posts_with_comments = {}
-    for post in posts:
-        posts_with_comments[post] = post.comments.filter(parent__isnull=True)
-
-    return render(request, 'feed.html', {
-        'posts_with_comments': posts_with_comments,
-        'notifications': notifications,
-    })
+    return render(request, 'feed.html', {'posts_with_comments': posts_with_comments, 'notifications': notifications})
 
 @login_required
 def create_post(request):
@@ -71,20 +63,15 @@ def like_post(request, post_id):
 
 @login_required
 def comment_post(request, post_id):
+
     post = get_object_or_404(Post, pk=post_id)
-
     if request.method == 'POST':
+        content = request.POST['content']
+        comment = Comment(user=request.user, post=post, content=content)
+        comment.save()
 
-        comment_form = CommentForm(data=request.POST)
-        if comment_form.is_valid():
-            new_comment = comment_form.save(commit=False)
-            new_comment.post = post
-            new_comment.user = request.user
-            new_comment.save()
-
-            if request.user != post.user:
-
-                Notification.objects.create(
+    if request.user != post.user:
+        Notification.objects.create(
                     user=post.user,
                     sender=request.user,
                     notification_type='comment',
@@ -107,3 +94,22 @@ def delete_post(request, post_id):
 def clear_notifications(request):
     Notification.objects.filter(user=request.user).delete()
     return redirect('feed')
+
+@login_required
+def search(request):
+    query = request.GET.get('q')
+    post_results = []
+    profile_results = []
+    if query:
+        post_results = Post.objects.filter(Q(content__icontains=query) | Q(user__username__icontains=query))
+        profile_results = Profile.objects.filter(Q(user__username__icontains=query))
+    return render(request, 'search_results.html', {
+        'query': query,
+        'post_results': post_results,
+        'profile_results': profile_results
+    })
+
+@login_required
+def post_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    return render(request, 'post_detail.html', {'post': post})

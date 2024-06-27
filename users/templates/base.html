@@ -11,18 +11,17 @@
             border-radius: 10px;
         }
         body {
-            background-color: rgb(190, 189, 189);
+            background-color: rgb(213, 240, 245);
         }
         .H1FEED {
-            font-family:serif;
+            font-family: serif;
             color: rgb(0, 0, 0);
             font-size: 50px;
             padding-right: 20px;
         }
-        .H1FEED:hover{
+        .H1FEED:hover {
             text-decoration: none;
         }
-    
         .navbar {
             margin-bottom: 20px;
         }
@@ -62,30 +61,66 @@
             background-color: #6f6f6f;
             color: white;
             border-radius: 5px;
-            padding: 3px 6px; /* Smaller padding */
-            width: auto; /* Adjust width to auto to fit content */
+            padding: 3px 6px;
+            width: auto;
             text-decoration: none;
             display: inline-block;
             margin-bottom: 10px;
-            font-size: 12px; /* Smaller font size */
+            font-size: 12px;
         }
         .btn-clear-notifications:hover {
             background-color: #433e3f;
         }
         .card {
-            margin-bottom: 1rem; /* Adjust spacing between posts */
-            padding: 10px; /* Reduce padding within cards */
+            margin-bottom: 1rem;
+            padding: 10px;
         }
         .card-body {
-            padding: 10px; /* Reduce padding within card body */
+            padding: 10px;
             max-width: 800px;
+        }
+        .messages {
+            position: fixed;
+            top: 100px;
+            left: 20px;
+            width: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .message {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .message:last-child {
+            border-bottom: none;
+        }
+        .message.unread {
+            font-weight: bold;
+        }
+        .btn-clear-messages {
+            background-color: #6f6f6f;
+            color: white;
+            border-radius: 5px;
+            padding: 3px 6px;
+            width: auto;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .btn-clear-messages:hover {
+            background-color: #433e3f;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light" style="border-radius: 20px;">
-            <a class="H1FEED" href="{% url 'feed' %}">The Wave</a>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="H1FEED" href="{% url 'feed' %}">Waves</a>
             <a class="navbar-brand" href="{% url 'profile' username=request.user.username %}">Profile</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -99,9 +134,13 @@
                         <a class="nav-link" href="{% url 'create_post' %}">Create Post</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        <a class="nav-link" href="{% url 'login' %}">Logout</a>
                     </li>
                 </ul>
+                <form class="form-inline ml-auto" action="{% url 'search' %}" method="get">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
             </div>
         </nav>
 
@@ -121,4 +160,5 @@
         {% block content %}{% endblock %}
     </div>
 </body>
+<footer style=" margin-left: 650px;">@WAVES website</footer>
 </html>
