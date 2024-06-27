@@ -1,150 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feed</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    {% load static %}
-    <style>
-        body {
-            background-color: whitesmoke;
-        }
-        .navbar {
-            margin-bottom: 20px;
-        }
-        .btn-submit {
-            background-color: #007bff;
-            color: white;
-            border-radius: 25px;
-            padding: 10px 20px;
-            text-decoration: none;
-            font-size: 1.1em;
-            font-weight: bold;
-        }
-        .btn-submit:hover {
-            background-color: #0056b3;
-        }
-        .post-image {
-            max-width: 100%;
-            height: auto;
-            max-height: 300px;
-            object-fit: cover;
-        }
-        .btn-delete {
-            background-color: #dc3545;
-            color: white;
-            border-radius: 5px;
-            padding: 5px 10px;
-            text-decoration: none;
-        }
-        .btn-delete:hover {
-            background-color: #c82333;
-        }
-        .btn-like, .btn-comment {
-            background-color: #f8f9fa;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
-            padding: 5px 10px;
-            text-decoration: none;
-            color: #495057;
-        }
-        .btn-like:hover, .btn-comment:hover {
-            background-color: #e2e6ea;
-        }
-        .comment-input {
-            border-radius: 25px;
-            padding: 5px 10px;
-            border: 1px solid #ced4da;
-        }
-        .navbar-brand-logo {
-            font-family: 'Pacifico', cursive;
-            font-size: 24px;
-            color: #007bff;
-            margin-right: 20px;
-            font-weight: bold;
-        }
-        .nav-link {
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand navbar-brand-logo" href="{% url 'feed' %}">The Wave</a>
-            <a class="navbar-brand" href="{% url 'profile' username=request.user.username %}">Profile</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'feed' %}">Feed</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'create_post' %}">Create Post</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Logout</a>
-                    </li>
+{% extends 'base.html' %}
+
+{% block title %}Feed{% endblock %}
+
+{% block content %}
+<style> 
+    .post-card {
+        max-width: 750px;
+        margin: 0 auto 20px auto; /* Center the card and add bottom margin */
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #fff;
+    }
+    .post-image {
+        max-height: 400px; /* Reduce max-height for images */
+        object-fit: cover;
+    }
+    .btn-like, .btn-comment {
+        background-color: #70d2ff;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        padding: 5px 10px;
+        text-decoration: none;
+        color: #495057;
+        
+    }
+    .btn-like:hover, .btn-comment:hover {
+        background-color: #e2e6ea;
+    }
+    .card-title a {
+        text-decoration: none;
+        color: inherit;
+    }
+    .card-text {
+        margin-bottom: 10px;
+    }
+</style>
+{% load static %}
+<h1><a href="{% url 'feed' %}" style="font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; text-decoration:none; color: rgb(0, 0, 0);">Waves</a></h1>
+<div class="mt-4">
+    {% for post, comments in posts_with_comments.items %}
+        <div class="post-card mb-3">
+            <div class="card-body">
+                <h5 class="card-title"><a href="{% url 'profile' username=post.user.username %}">@{{ post.user.username }}</a></h5>
+                <p class="card-text">{{ post.content }}</p>
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" class="img-fluid post-image" alt="Post Image">
+                {% endif %}
+                <p class="card-text"><small class="text-muted">{{ post.created_at }}</small></p>
+
+                <!-- Like Button -->
+                {% if user.is_authenticated %}
+                    {% if user in post.likes.all %}
+                        <a href="{% url 'like_post' post.id %}" class="btn btn-like">Unlike</a>
+                    {% else %}
+                        <a href="{% url 'like_post' post.id %}" class="btn btn-like">Like</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-like">Like</a>
+                {% endif %}
+
+                <!-- Display Like Count -->
+                <span>{{ post.likes.count }} {% if post.likes.count == 1 %} like{% else %} likes{% endif %}</span>
+
+                <!-- Comment Form -->
+                <form method="post" action="{% url 'comment_post' post.id %}" class="mt-2">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="content" class="form-control comment-input" placeholder="Add a comment">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary btn-comment" type="submit">Comment</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="parent" value="0">
+                </form>
+
+                <!-- Comment Display -->
+                <ul class="list-group mt-2">
+                    {% for comment in comments %}
+                        <li class="list-group-item">
+                            <a href="{% url 'profile' username=comment.user.username %}">{{ comment.user.username }}</a>: {{ comment.content }}
+                        </li>
+                    {% endfor %}
                 </ul>
             </div>
-        </nav>
-
-        <h1><a href="{% url 'feed' %}" style="text-decoration: none; color: inherit;">Waves</a></h1>
-        <a href="{% url 'create_post' %}" class="btn btn-primary btn-submit">Create Post</a>
-        <div class="mt-4">
-            {% for post in posts %}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title"><a href="{% url 'profile' username=post.user.username %}" style="text-decoration: none; color: inherit;">{{ post.user.username }}</a></h5>
-                        <p class="card-text">{{ post.content }}</p>
-                        {% if post.image %}
-                            <img src="{{ post.image.url }}" class="img-fluid post-image" alt="Post Image">
-                        {% endif %}
-                        <p class="card-text"><small class="text-muted">{{ post.created_at }}</small></p>
-
-                        <!-- Like Button -->
-                        {% if user.is_authenticated %}
-                            {% if user in post.likes.all %}
-                                <a href="{% url 'like_post' post.id %}" class="btn btn-like">Unlike</a>
-                            {% else %}
-                                <a href="{% url 'like_post' post.id %}" class="btn btn-like">Like</a>
-                            {% endif %}
-                        {% else %}
-                            <a href="{% url 'login' %}" class="btn btn-like">Like</a>
-                        {% endif %}
-
-                        <!-- Display Like Count -->
-                        <span>{{ post.likes.count }} {% if post.likes.count == 1 %} like{% else %} likes{% endif %}</span>
-
-                        <!-- Comment Form -->
-                        <form method="post" action="{% url 'comment_post' post.id %}" class="mt-2">
-                            {% csrf_token %}
-                            <div class="input-group">
-                                <input type="text" name="content" class="form-control comment-input" placeholder="Add a comment">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary btn-comment" type="submit">Comment</button>
-                                </div>
-                            </div>
-                        </form>
-
-                        <!-- Comment Display -->
-                        <ul class="list-group mt-2">
-                            {% for comment in post.comments.all %}
-                                <li class="list-group-item"><a href="{% url 'profile' username=comment.user.username %}" style="text-decoration: none; color: inherit;">{{ comment.user.username }}</a>: {{ comment.content }}</li>
-                            {% endfor %}
-                        </ul>
-
-                        <!-- Delete Button -->
-                        {% if user == post.user %}
-                            <a href="{% url 'delete_post' post.id %}" class="btn btn-delete mt-2">Delete</a>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endfor %}
         </div>
-    </div>
-</body>
-</html>
+    {% endfor %}
+</div>
+{% endblock %}

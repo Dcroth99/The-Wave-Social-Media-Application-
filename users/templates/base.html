@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}The Wave{% endblock %}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    {% load static %}
+    <style>
+        .container {
+            border-radius: 10px;
+        }
+        body {
+            background-color: rgb(190, 189, 189);
+        }
+        .H1FEED {
+            font-family:serif;
+            color: rgb(0, 0, 0);
+            font-size: 50px;
+            padding-right: 20px;
+        }
+        .H1FEED:hover{
+            text-decoration: none;
+        }
+    
+        .navbar {
+            margin-bottom: 20px;
+        }
+        .navbar-brand-logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 24px;
+            color: #007bff;
+            margin-right: 20px;
+            font-weight: bold;
+        }
+        .nav-link {
+            font-weight: bold;
+        }
+        .notifications {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            width: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .notification {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .notification:last-child {
+            border-bottom: none;
+        }
+        .notification.unread {
+            font-weight: bold;
+        }
+        .btn-clear-notifications {
+            background-color: #6f6f6f;
+            color: white;
+            border-radius: 5px;
+            padding: 3px 6px; /* Smaller padding */
+            width: auto; /* Adjust width to auto to fit content */
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+            font-size: 12px; /* Smaller font size */
+        }
+        .btn-clear-notifications:hover {
+            background-color: #433e3f;
+        }
+        .card {
+            margin-bottom: 1rem; /* Adjust spacing between posts */
+            padding: 10px; /* Reduce padding within cards */
+        }
+        .card-body {
+            padding: 10px; /* Reduce padding within card body */
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" style="border-radius: 20px;">
+            <a class="H1FEED" href="{% url 'feed' %}">The Wave</a>
+            <a class="navbar-brand" href="{% url 'profile' username=request.user.username %}">Profile</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'feed' %}">Feed</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'create_post' %}">Create Post</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="notifications">
+            {% if notifications %}
+                <a href="{% url 'clear_notifications' %}" class="btn btn-clear-notifications">Clear Notifications</a>
+                {% for notification in notifications %}
+                    <div class="notification{% if not notification.read %} unread{% endif %}">
+                        {{ notification.text }}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No notifications</p>
+            {% endif %}
+        </div>
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
